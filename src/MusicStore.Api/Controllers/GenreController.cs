@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MusicStore.Entities;
-using MusicStore.Repositories;
+using MusicStore.Repositories.Implementations;
+using MusicStore.Repositories.interfaces;
 
 namespace MusicStore.Api.Controllers;
 
@@ -8,46 +9,46 @@ namespace MusicStore.Api.Controllers;
 [Route("api/[controller]")]
 public class GenreController : ControllerBase
 {
-    private readonly GenreRepository repository;
+    private readonly IGenreRepository repository;
 
-    public GenreController(GenreRepository repository)
+    public GenreController(IGenreRepository repository)
     {
         this.repository = repository;
     }
     // GenreRepository repository = new();
 
     [HttpGet]
-    public ActionResult<List<Genre>> Get()
+    public async Task<IActionResult> Get()
     {
-        var data = repository.Get();
+        var data = await repository.GetAsync();
         return Ok(data);
     }
 
     [HttpGet("{id:int}")]
-    public ActionResult<List<Genre>> Get(int id)
+    public async Task<IActionResult> Get(int id)
     {
-        var item = repository.Get(id);
+        var item = await repository.GetAsync(id);
         return item is not null ? Ok(item) : NotFound();
     }
 
     [HttpPost()]
-    public ActionResult<Genre> Post(Genre genre)
+    public async Task<IActionResult> Post(Genre genre)
     {
-        repository.Add(genre);
+        await repository.AddAsync(genre);
         return Ok(genre);
     }
 
     [HttpPut("{id:int}")]
-    public ActionResult Put(int id, Genre genre)
+    public async Task<IActionResult> Put(int id, Genre genre)
     {
-        repository.Update(id, genre);
+        await repository.UpdateAsync(id, genre);
         return Ok();
     }
 
     [HttpDelete("id:int")]
-    public ActionResult Delete(int id)
+    public async Task<IActionResult> Delete(int id)
     {
-        repository.Delete(id);
+        await repository.DeleteAsync(id);
         return Ok();
     }
 }
