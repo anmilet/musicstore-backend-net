@@ -2,6 +2,8 @@
 using MusicStore.Entities;
 using MusicStore.Persistence;
 using MusicStore.Repositories.interfaces;
+using System.Data;
+using System.Runtime.CompilerServices;
 
 namespace MusicStore.Repositories.Implementations;
 
@@ -20,7 +22,11 @@ public class GenreRepository : IGenreRepository
     }
     public async Task<Genre?> GetAsync(int id)
     {
-        return await context.Genres.FirstOrDefaultAsync(x => x.Id == id);
+        var item = await context.Genres.FirstOrDefaultAsync(x => x.Id == id);
+        if (item is not null)
+            return item;
+        else
+            throw new InvalidOperationException($"No se encontro el registro con id {id}");
     }
     public async Task<int> AddAsync(Genre genre)
     {
@@ -39,6 +45,11 @@ public class GenreRepository : IGenreRepository
             context.Update(item);
             await context.SaveChangesAsync();
         }
+        else 
+        {
+            throw new InvalidOperationException($"No se encontro el registro con el id {id}");
+        }
+
     }
     public async Task DeleteAsync(int id)
     {
@@ -47,6 +58,10 @@ public class GenreRepository : IGenreRepository
         {
             context.Genres.Remove(item);
             await context.SaveChangesAsync();
+        }
+        else
+        {
+            throw new InvalidOperationException($"No se encontro el registro con el id {id}");
         }
 
     }
